@@ -1,5 +1,6 @@
 .ipynb*
 *.pyc
-./data/
+*.csv
+*.pdf
 logs
 venv
