@@ -1,0 +1,17 @@
+README.md
+setup.py
+src/fake_user_detection/__init__.py
+src/fake_user_detection/__main__.py
+src/fake_user_detection/config.py
+src/fake_user_detection.egg-info/PKG-INFO
+src/fake_user_detection.egg-info/SOURCES.txt
+src/fake_user_detection.egg-info/dependency_links.txt
+src/fake_user_detection.egg-info/requires.txt
+src/fake_user_detection.egg-info/top_level.txt
+src/fake_user_detection/data/__init__.py
+src/fake_user_detection/data/make_dataset.py
+src/fake_user_detection/features/__init__.py
+src/fake_user_detection/features/build_features.py
+src/fake_user_detection/models/__init__.py
+src/fake_user_detection/models/predict_model.py
+src/fake_user_detection/models/train_model.py

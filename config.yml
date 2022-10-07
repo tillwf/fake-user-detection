@@ -1,0 +1,16 @@
+path:
+  input_data_path: "data/raw/fake_users.csv"
+  output_data_root: "data/processed/"
+  models_root: "models"
+  logs_root: "logs"
+
+model:
+  name: "VGG16"
+  version: 1
+  epoch: 50
+  batch_size: 64
+  image_size: 224
+  dense_dim: 4096
+  dropout: 0.2
+  activation_function: 'relu'
+  early_stopping_patience: 10
