@@ -24,5 +24,9 @@ class EventDistribution(Feature):
         n_event = pivot.sum(axis=1)
         pivot_pct = (pivot.div(n_event, axis=0)
                           .add_suffix("_pct"))
-
+        
+        pivot_pct.columns = pd.MultiIndex.from_product([
+            ['event_distribution'],
+            pivot_pct.columns
+        ])
         return pivot_pct

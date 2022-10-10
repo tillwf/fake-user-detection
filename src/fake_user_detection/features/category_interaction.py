@@ -1,4 +1,5 @@
 import logging
+import pandas as pd
 
 from fake_user_detection.features.feature import Feature
 
@@ -21,4 +22,10 @@ class CategoryInteraction(Feature):
         nunique_cat_proportion = nunique_cat/n_category
         nunique_cat_proportion.name = "n_unique_category_proportion"
 
-        return nunique_cat.to_frame().join(nunique_cat_proportion.to_frame())
+        df = nunique_cat.to_frame().join(nunique_cat_proportion.to_frame())
+        df.columns = pd.MultiIndex.from_product([
+            ['category_interaction'],
+            df.columns
+        ])
+
+        return df

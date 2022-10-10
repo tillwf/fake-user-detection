@@ -9,12 +9,20 @@ from tensorflow import keras
 from tensorflow.keras import layers
 
 from fake_user_detection.config import load_config
+from fake_user_detection.features.category_interaction import CategoryInteraction
+from fake_user_detection.features.event_distribution import EventDistribution
+from fake_user_detection.features.event_frequency import EventFrequency
 
 CONF = load_config()
 OUTPUT_ROOT = CONF["path"]["output_data_root"]
 MODELS_ROOT = CONF["path"]["models_root"]
 LOGS_ROOT = CONF["path"]["logs_root"]
 
+FEATURE_DICT = {
+    "category_interaction": CategoryInteraction,
+    "event_distribution": EventDistribution,
+    "event_frequency": EventFrequency
+}
 
 @click.group()
 def train():
@@ -26,33 +34,45 @@ def train():
     '--output-root',
     type=str,
     default=OUTPUT_ROOT,
-    help='Path of output folder, default is {data_set}'.format(
-        data_set=OUTPUT_ROOT
+    help='Path of output folder, default is {}'.format(
+        OUTPUT_ROOT
     )
 )
 @click.option(
     '--models-root',
     type=str,
     default=MODELS_ROOT,
-    help='Path of models folder, default is {data_set}'.format(
-        data_set=MODELS_ROOT
+    help='Path of models folder, default is {}'.format(
+        MODELS_ROOT
     )
 )
 @click.option(
     '--logs-root',
     type=str,
     default=LOGS_ROOT,
-    help='Path of logs folder, default is {data_set}'.format(
-        data_set=LOGS_ROOT
+    help='Path of logs folder, default is {}'.format(
+        LOGS_ROOT
     )
 )
-def train_model(models_root, output_root, logs_root):
+@click.option(
+    '--features',
+    type=list,
+    default=FEATURE_DICT.keys,
+    help='Features used for the training, default is {}'.format(
+        FEATURE_DICT.keys
+    )
+)
+def train_model(models_root, output_root, logs_root, features):
     logging.info("Training Model")
 
-    X_train = pd.read_csv(os.path.join(OUTPUT_ROOT, "train_features.csv")).set_index("UserId")
-    y_train = X_train.pop("Fake")
-    X_validation = pd.read_csv(os.path.join(OUTPUT_ROOT, "validation_features.csv")).set_index("UserId")
-    y_validation = X_validation.pop("Fake")
+    X_train = pd.read_csv(os.path.join(OUTPUT_ROOT, "train_features.csv"),index_col=0, header=[0, 1])
+    y_train = pd.read_csv(os.path.join(OUTPUT_ROOT, "train_users.csv")).set_index("UserId")
+    X_validation = pd.read_csv(os.path.join(OUTPUT_ROOT, "validation_features.csv"),index_col=0, header=[0, 1])
+    y_validation = pd.read_csv(os.path.join(OUTPUT_ROOT, "validation_users.csv")).set_index("UserId")
+    
+    features_class = [f for f in features if FEATURE_DICT.get(f)]
+    X_train = X_train[features_class].droplevel(0, axis=1)
+    X_validation = X_validation[features_class].droplevel(0, axis=1)
 
     normalizer = tf.keras.layers.Normalization(axis=-1)
 

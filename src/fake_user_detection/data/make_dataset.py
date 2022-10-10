@@ -22,16 +22,16 @@ def dataset():
     '--data-path',
     type=str,
     default=DATA_PATH,
-    help='Path of train dataset, default is {data_set}'.format(
-        data_set=DATA_PATH
+    help='Path of train dataset, default is {}'.format(
+        DATA_PATH
     )
 )
 @click.option(
     '--output-root',
     type=str,
     default=OUPUT_ROOT,
-    help='Path of output folder, default is {data_set}'.format(
-        data_set=OUPUT_ROOT
+    help='Path of output folder, default is {}'.format(
+        OUPUT_ROOT
     )
 )
 def make_dataset(data_path, output_root):

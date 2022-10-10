@@ -1,4 +1,5 @@
 import logging
+import pandas as pd
 
 from fake_user_detection.features.feature import Feature
 
@@ -28,5 +29,10 @@ class EventFrequency(Feature):
                                     .apply(n_consecutive_click_as)
                                  )
         n_consecutive_click_ad.name = "n_consecutive_click_ad"
-        
+        n_consecutive_click_ad = n_consecutive_click_ad.to_frame()
+        n_consecutive_click_ad.columns = pd.MultiIndex.from_product([
+            ['event_frequency'],
+            n_consecutive_click_ad.columns
+        ])
+
         return n_consecutive_click_ad

@@ -4,13 +4,13 @@ path:
   models_root: "models"
   logs_root: "logs"
 
+features:
+ - "category_interaction"
+ - "event_distribution"
+ - "event_frequency"
+
 model:
   name: "Linear"
   version: 1
   epoch: 50
-  batch_size: 64
-  image_size: 224
-  dense_dim: 4096
-  dropout: 0.2
-  activation_function: 'relu'
   early_stopping_patience: 10
