@@ -12,6 +12,8 @@ from fake_user_detection.config import load_config
 
 CONF = load_config()
 OUTPUT_ROOT = CONF["path"]["output_data_root"]
+MODELS_ROOT = CONF["path"]["models_root"]
+LOGS_ROOT = CONF["path"]["logs_root"]
 
 
 @click.group()
@@ -20,8 +22,32 @@ def train():
 
 
 @train.command()
-def train_model():
-    print("Training Model")
+@click.option(
+    '--output-root',
+    type=str,
+    default=OUTPUT_ROOT,
+    help='Path of output folder, default is {data_set}'.format(
+        data_set=OUTPUT_ROOT
+    )
+)
+@click.option(
+    '--models-root',
+    type=str,
+    default=MODELS_ROOT,
+    help='Path of models folder, default is {data_set}'.format(
+        data_set=MODELS_ROOT
+    )
+)
+@click.option(
+    '--logs-root',
+    type=str,
+    default=LOGS_ROOT,
+    help='Path of logs folder, default is {data_set}'.format(
+        data_set=LOGS_ROOT
+    )
+)
+def train_model(models_root, output_root, logs_root):
+    logging.info("Training Model")
 
     X_train = pd.read_csv(os.path.join(OUTPUT_ROOT, "train_features.csv")).set_index("UserId")
     y_train = X_train.pop("Fake")
@@ -35,20 +61,45 @@ def train_model():
         layers.Dense(units=1)
     ])
     linear_model.compile(
-        optimizer=tf.keras.optimizers.Adam(learning_rate=0.1),
+        optimizer=tf.keras.optimizers.Adam(learning_rate=0.01),
         loss='mean_absolute_error',
     )
 
     callbacks = []
-    tensorboard_callback = None
-    model_checkpoint_callback = None
-    best_model_callback = None
-    early_stopping_callback = None
+
+    os.makedirs(models_root, exist_ok=True)
+    os.makedirs(logs_root, exist_ok=True)
+    tensorboard = tf.keras.callbacks.TensorBoard(
+        log_dir=logs_root,
+        histogram_freq=1,
+        write_graph=True,
+        write_images=False,
+        update_freq=100,
+        profile_batch=2,
+        embeddings_freq=1
+    )
+    callbacks.append(tensorboard)
+
+    best_model_file = os.path.join(MODELS_ROOT, "best_model_so_far.h5")
+    best_model_checkpoint = tf.keras.callbacks.ModelCheckpoint(
+        best_model_file,
+        monitor='val_loss',
+        verbose=1,
+        save_best_only=True
+    )
+    callbacks.append(best_model_checkpoint)
+
+    early_stopping = tf.keras.callbacks.EarlyStopping(
+        patience=5,
+        monitor="val_loss"
+    )
+    callbacks.append(early_stopping)
 
     history = linear_model.fit(
         X_train,
         y_train.values,
-        epochs=10,
+        callbacks=callbacks,
+        epochs=100,
         validation_data=(
             X_validation,
             y_validation.values
@@ -56,3 +107,5 @@ def train_model():
     )
 
     logging.info("Saving Model")
+    linear_model.load_weights(best_model_file)
+    linear_model.save(os.path.join(MODELS_ROOT, "final_model.h5"))

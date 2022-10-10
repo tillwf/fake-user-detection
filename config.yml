@@ -5,7 +5,7 @@ path:
   logs_root: "logs"
 
 model:
-  name: "VGG16"
+  name: "Linear"
   version: 1
   epoch: 50
   batch_size: 64

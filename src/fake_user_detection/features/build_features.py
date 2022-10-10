@@ -48,7 +48,6 @@ def build_features(data_path, output_root):
     df = pd.read_csv(data_path)
     train_users = pd.read_csv(os.path.join(OUTPUT_ROOT, "train_users.csv"))
     validation_users = pd.read_csv(os.path.join(OUTPUT_ROOT, "validation_users.csv"))
-    test_users = pd.read_csv(os.path.join(OUTPUT_ROOT, "test_users.csv"))
 
     logging.info("Computing the features")
     users_features = []
@@ -58,15 +57,13 @@ def build_features(data_path, output_root):
 
     logging.info("Merging the features")
     users_features = ft.reduce(
-        lambda left, right: pd.merge(left, right, on='UserId'),
+        lambda left, right: pd.merge(left, right, on='UserId', how="outer").fillna(0),
         users_features
     )
 
     X_train = users_features.merge(train_users, on="UserId", how="right")
     X_validation = users_features.merge(validation_users, on="UserId", how="right")
-    X_test = users_features.merge(test_users, on="UserId", how="right")
     
     logging.info("Saving the features")
     X_train.to_csv(os.path.join(OUTPUT_ROOT, "train_features.csv"), index=False)
     X_validation.to_csv(os.path.join(OUTPUT_ROOT, "validation_features.csv"), index=False)
-    X_test.to_csv(os.path.join(OUTPUT_ROOT, "test_features.csv"), index=False)

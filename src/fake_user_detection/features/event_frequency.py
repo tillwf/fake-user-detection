@@ -28,5 +28,5 @@ class EventFrequency(Feature):
                                     .apply(n_consecutive_click_as)
                                  )
         n_consecutive_click_ad.name = "n_consecutive_click_ad"
-
+        
         return n_consecutive_click_ad
