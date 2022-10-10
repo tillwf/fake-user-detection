@@ -1,4 +1,5 @@
 import click
+import functools as ft
 import json
 import logging
 import os
@@ -10,7 +11,14 @@ from fake_user_detection.features.event_distribution import EventDistribution
 from fake_user_detection.features.event_frequency import EventFrequency
 
 CONF = load_config()
+DATA_PATH = CONF["path"]["input_data_path"]
 OUTPUT_ROOT = CONF["path"]["output_data_root"]
+
+FEATURES = [
+    CategoryInteraction,
+    EventDistribution,
+    EventFrequency
+]
 
 @click.group()
 def build():
@@ -19,13 +27,46 @@ def build():
 
 @build.command()
 @click.option(
-    '--output-root',
+    '--data-path',
     type=str,
-    default=OUPUT_ROOT,
-    help='Path of output folder, default is {data_set}'.format(
-        data_set=OUPUT_ROOT
+    default=DATA_PATH,
+    help='Path of train dataset, default is {data_set}'.format(
+        data_set=DATA_PATH
     )
 )
-def build_features():
+@click.option(
+    '--output-root',
+    type=str,
+    default=OUTPUT_ROOT,
+    help='Path of output folder, default is {data_set}'.format(
+        data_set=OUTPUT_ROOT
+    )
+)
+def build_features(data_path, output_root):
     logging.info("Loading Data")
-    X_train = pd.read_csv("{}/train.csv".format(OUTPUT_ROOT))
+
+    df = pd.read_csv(data_path)
+    train_users = pd.read_csv(os.path.join(OUTPUT_ROOT, "train_users.csv"))
+    validation_users = pd.read_csv(os.path.join(OUTPUT_ROOT, "validation_users.csv"))
+    test_users = pd.read_csv(os.path.join(OUTPUT_ROOT, "test_users.csv"))
+
+    logging.info("Computing the features")
+    users_features = []
+    for feature in FEATURES:
+        f = feature.extract_feature(df)
+        users_features.append(f)
+
+    logging.info("Merging the features")
+    users_features = ft.reduce(
+        lambda left, right: pd.merge(left, right, on='UserId'),
+        users_features
+    )
+
+    X_train = users_features.merge(train_users, on="UserId", how="right")
+    X_validation = users_features.merge(validation_users, on="UserId", how="right")
+    X_test = users_features.merge(test_users, on="UserId", how="right")
+    
+    logging.info("Saving the features")
+    X_train.to_csv(os.path.join(OUTPUT_ROOT, "train_features.csv"), index=False)
+    X_validation.to_csv(os.path.join(OUTPUT_ROOT, "validation_features.csv"), index=False)
+    X_test.to_csv(os.path.join(OUTPUT_ROOT, "test_features.csv"), index=False)

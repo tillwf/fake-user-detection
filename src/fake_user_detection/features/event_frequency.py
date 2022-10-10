@@ -1,13 +1,17 @@
-from fake_user_detection.features import Feature
+import logging
+
+from fake_user_detection.features.feature import Feature
 
 
-class EventFrequecy(Feature):
+class EventFrequency(Feature):
 
-    def extract_feature(self, df):
+    @classmethod
+    def extract_feature(cls, df):
         """
         A bot tends to produce more click_ad events in a
         time window than a real user
         """
+        logging.info("Computing the feature EventFrequency")
 
         def n_consecutive_click_as(sub_df):
             return (sub_df.reset_index()
@@ -25,4 +29,4 @@ class EventFrequecy(Feature):
                                  )
         n_consecutive_click_ad.name = "n_consecutive_click_ad"
 
-        self.data = n_consecutive_click_ad
+        return n_consecutive_click_ad

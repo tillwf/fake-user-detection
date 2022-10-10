@@ -55,26 +55,22 @@ def make_dataset(data_path, output_root):
         test_size=0.5
     )
 
-    X_train = df.merge(train_users["UserId"], on="UserId", how="right")
-    X_validation = df.merge(validation_users["UserId"], on="UserId", how="right")
-    X_test = df.merge(test_users["UserId"], on="UserId", how="right")
-
     logging.info("Saving Files")
     
-    X_train.to_csv(os.path.join(output_root, "train.csv"), index=False)
-    X_validation.to_csv(os.path.join(output_root, "validation.csv"), index=False)
-    X_test.to_csv(os.path.join(output_root, "test.csv"), index=False)
+    train_users.to_csv(os.path.join(output_root, "train_users.csv"), index=False)
+    validation_users.to_csv(os.path.join(output_root, "validation_users.csv"), index=False)
+    test_users.to_csv(os.path.join(output_root, "test_users.csv"), index=False)
     
     logging.info("Train Size: {} ({:.2%} fake users)".format(
-        len(X_train),
+        len(train_users),
         sum(train_users["Fake"])/len(train_users)
     ))
     logging.info("Validation Size: {} ({:.2%} fake users)".format(
-        len(X_validation),
+        len(validation_users),
         sum(validation_users["Fake"])/len(validation_users)
     ))
     logging.info("Test Size: {} ({:.2%} fake users)".format(
-        len(X_test),
+        len(test_users),
         sum(test_users["Fake"])/len(test_users)
     ))
 
