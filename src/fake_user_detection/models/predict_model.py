@@ -56,10 +56,11 @@ def predict():
 )
 @click.option(
     '--features',
-    type=list,
-    default=FEATURE_DICT.keys,
+    type=str,
+    multiple=True,
+    default=list(FEATURE_DICT.keys()),
     help='Features used for the training, default is {}'.format(
-        FEATURE_DICT.keys
+        list(FEATURE_DICT.keys())
     )
 )
 def make_predictions(testset_path, models_root, output_root, features, evaluate=True):

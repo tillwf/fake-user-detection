@@ -56,15 +56,16 @@ def train():
 )
 @click.option(
     '--features',
-    type=list,
-    default=FEATURE_DICT.keys,
+    type=str,
+    multiple=True,
+    default=list(FEATURE_DICT.keys()),
     help='Features used for the training, default is {}'.format(
-        FEATURE_DICT.keys
+        list(FEATURE_DICT.keys())
     )
 )
 def train_model(models_root, output_root, logs_root, features):
     logging.info("Training Model")
-
+    import ipdb; ipdb.set_trace()
     X_train = pd.read_csv(os.path.join(OUTPUT_ROOT, "train_features.csv"),index_col=0, header=[0, 1])
     y_train = pd.read_csv(os.path.join(OUTPUT_ROOT, "train_users.csv")).set_index("UserId")
     X_validation = pd.read_csv(os.path.join(OUTPUT_ROOT, "validation_features.csv"),index_col=0, header=[0, 1])
