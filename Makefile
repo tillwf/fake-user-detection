@@ -31,10 +31,6 @@ clean:
 	find . -type f -name "*.py[co]" -delete
 	find . -type d -name "__pycache__" -delete
 
-## Lint using flake8
-lint:
-	flake8 src
-
 ## Test python environment is setup correctly
 tests:
 	$(PYTHON_INTERPRETER) -m pytest tests
