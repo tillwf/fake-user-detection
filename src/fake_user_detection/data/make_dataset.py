@@ -38,6 +38,7 @@ def make_dataset(data_path, output_root):
     logging.info("Making Dataset")
     logging.info(data_path)
     logging.info(output_root)
+    os.makedirs(output_root, exist_ok=True)
 
     df = pd.read_csv(data_path)
     unique_users = df[["UserId", "Fake"]].drop_duplicates()

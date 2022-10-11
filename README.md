@@ -11,6 +11,8 @@ pip install -U pip
 pip install -e .
 ```
 
+Create the folder `data/raw` and copy paste the csv file `fake_users.csv`.
+
 ## Commands
 
 ### Help
