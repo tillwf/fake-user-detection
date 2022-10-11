@@ -27,6 +27,10 @@ Will display all possible commands with their description. You can display each 
 python -m fake_user_detection <command> --help
 ```
 
+### Configuration
+
+Every default parameters are stored in the `config.yml` file.
+
 ### Dataset Creation
 
 Using the raw data we want to make a train/validation/test split while keeping the "Fake" column distribution.
@@ -95,6 +99,7 @@ python -m fake_user_detection train-model \
     --features "event_distribution" \
     --features "event_frequency"
 ```
+The model are saved in the `models` folder using its name and its version: `models/Linear/1`. It helps comparing results of different approaches.
 
 ### Make predictions
 

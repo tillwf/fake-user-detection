@@ -17,6 +17,9 @@ OUTPUT_ROOT = CONF["path"]["output_data_root"]
 MODELS_ROOT = CONF["path"]["models_root"]
 TESTSET_PATH = CONF["path"]["testset_path"]
 
+MODEL_NAME = CONF["model"]["name"]
+MODEL_VERSION = CONF["model"]["version"]
+
 FEATURE_DICT = {
     "category_interaction": CategoryInteraction,
     "event_distribution": EventDistribution,
@@ -63,7 +66,30 @@ def predict():
         list(FEATURE_DICT.keys())
     )
 )
-def make_predictions(testset_path, models_root, output_root, features, evaluate=True):
+@click.option(
+    '--model-name',
+    type=str,
+    default=MODEL_NAME,
+    help='Name of the model, default is {}'.format(
+        MODEL_NAME
+    )
+)
+@click.option(
+    '--model-version',
+    type=int,
+    default=MODEL_VERSION,
+    help='Number of epoch, default is {}'.format(
+        MODEL_VERSION
+    )
+)
+def make_predictions(
+    testset_path,
+    models_root,
+    output_root,
+    features,
+    model_name,
+    model_version,
+    evaluate=True):
     logging.info("Make Prediction")
 
     logging.info("Reading test data")
@@ -86,7 +112,11 @@ def make_predictions(testset_path, models_root, output_root, features, evaluate=
     )
 
     logging.info("Loading model")
-    model = load_model(os.path.join(models_root, "final_model.h5"))
+    model = load_model(os.path.join(
+        models_root,
+        model_name,
+        str(model_version),
+        "final_model.h5"))
 
     logging.info("Making predictions")
     raw_predictions = pd.DataFrame(

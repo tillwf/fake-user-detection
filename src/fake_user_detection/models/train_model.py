@@ -18,6 +18,11 @@ OUTPUT_ROOT = CONF["path"]["output_data_root"]
 MODELS_ROOT = CONF["path"]["models_root"]
 LOGS_ROOT = CONF["path"]["logs_root"]
 
+MODEL_NAME = CONF["model"]["name"]
+MODEL_VERSION = CONF["model"]["version"]
+EPOCH = CONF["model"]["epoch"]
+EARLY_STOPPING = CONF["model"]["early_stopping_patience"]
+
 FEATURE_DICT = {
     "category_interaction": CategoryInteraction,
     "event_distribution": EventDistribution,
@@ -63,7 +68,48 @@ def train():
         list(FEATURE_DICT.keys())
     )
 )
-def train_model(models_root, output_root, logs_root, features):
+@click.option(
+    '--model-name',
+    type=str,
+    default=MODEL_NAME,
+    help='Name of the model, default is {}'.format(
+        MODEL_NAME
+    )
+)
+@click.option(
+    '--model-version',
+    type=int,
+    default=MODEL_VERSION,
+    help='Number of epoch, default is {}'.format(
+        MODEL_VERSION
+    )
+)
+@click.option(
+    '--epoch',
+    type=int,
+    default=EPOCH,
+    help='Number of epoch, default is {}'.format(
+        EPOCH
+    )
+)
+@click.option(
+    '--early-stopping',
+    type=int,
+    default=EARLY_STOPPING,
+    help='Early stopping value, default is {}'.format(
+        EARLY_STOPPING
+    )
+)
+def train_model(
+    models_root,
+    output_root,
+    logs_root,
+    features,
+    model_name,
+    model_version,
+    epoch,
+    early_stopping
+    ):
     logging.info("Training Model")
 
     X_train = pd.read_csv(os.path.join(OUTPUT_ROOT, "train_features.csv"),index_col=0, header=[0, 1])
@@ -105,7 +151,12 @@ def train_model(models_root, output_root, logs_root, features):
     )
     callbacks.append(tensorboard)
 
-    best_model_file = os.path.join(MODELS_ROOT, "best_model_so_far.h5")
+    best_model_file = os.path.join(
+        models_root,
+        model_name,
+        str(model_version),
+        "best_model_so_far.h5")
+
     best_model_checkpoint = tf.keras.callbacks.ModelCheckpoint(
         best_model_file,
         monitor='val_loss',
@@ -133,4 +184,9 @@ def train_model(models_root, output_root, logs_root, features):
 
     logging.info("Saving Model")
     linear_model.load_weights(best_model_file)
-    linear_model.save(os.path.join(MODELS_ROOT, "final_model.h5"))
+    linear_model.save(os.path.join(
+        models_root,
+        model_name,
+        str(model_version),
+        "final_model.h5"
+    ))
