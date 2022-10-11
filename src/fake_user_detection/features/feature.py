@@ -1,7 +1,7 @@
 class Feature():
 
-	data = None
+    data = None
 
-	@classmethod
-	def extract_feature(cls, df):
-		pass
+    @classmethod
+    def extract_feature(cls, df):
+        pass

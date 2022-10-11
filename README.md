@@ -37,8 +37,8 @@ else
 
 ```
 python -m fake_user_detection make-dataset \
-	--data-path data/raw/fake_users.csv \
-	--output-root data/processed/ 
+    --data-path data/raw/fake_users.csv \
+    --output-root data/processed/ 
 ```
 
 ### Features Construction
@@ -54,8 +54,8 @@ else
 
 ```
 python -m fake_user_detection build-features \
-	--data-path data/raw/fake_users.csv \
-	--output-root data/processed/
+    --data-path data/raw/fake_users.csv \
+    --output-root data/processed/
 ```
 
 ### Train the model
@@ -69,12 +69,12 @@ or
 
 ```
 python -m fake_user_detection train-model \
-	--output-root data/processed/ \
-	--models-root models \
-	--logs-root logs\
-	--features "category_interaction" \
-	--features "event_distribution" \
-	--features "event_frequency"
+    --output-root data/processed/ \
+    --models-root models \
+    --logs-root logs\
+    --features "category_interaction" \
+    --features "event_distribution" \
+    --features "event_frequency"
 ```
 
 ### Make predictions
@@ -87,12 +87,12 @@ or
 
 ```
 python -m fake_user_detection make-predictions \
-	--testset-path data/processed/test_data.csv \
-	--models-root models \
-	--output-root data/processed/ \
-	--features "category_interaction" \
-	--features "event_distribution" \
-	--features "event_frequency"
+    --testset-path data/processed/test_data.csv \
+    --models-root models \
+    --output-root data/processed/ \
+    --features "category_interaction" \
+    --features "event_distribution" \
+    --features "event_frequency"
 ```
 
 ### Make tests
