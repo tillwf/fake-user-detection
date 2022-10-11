@@ -6,7 +6,7 @@ This program aims at detecting fake users based on their activity.
 
 Python version: `3.10.7`
 
-```
+```bash
 pip install -U pip
 pip install -e .
 ```
@@ -15,13 +15,13 @@ pip install -e .
 
 ### Help
 
-```
+```bash
 python -m fake_user_detection
 ```
 
 Will display all possible commands with their description. You can display each command documentation with:
 
-```
+```bash
 python -m fake_user_detection <command> --help
 ```
 
@@ -31,13 +31,13 @@ Using the raw data we want to make a train/validation/test split while keeping t
 
 For the default values you can do:
 
-```
+```bash
 make dataset
 ```
 
 else
 
-```
+```bash
 python -m fake_user_detection make-dataset \
     --data-path data/raw/fake_users.csv \
     --output-root data/processed/ 
@@ -48,13 +48,13 @@ python -m fake_user_detection make-dataset \
 This command will compute all the features defined by the global variable `FEATURE_DICT`.
 We will always compute all the features and select them, afterwards, during the training step.
 
-```
+```bash
 make features
 ```
 
 else
 
-```
+```bash
 python -m fake_user_detection build-features \
     --data-path data/raw/fake_users.csv \
     --output-root data/processed/
@@ -78,13 +78,13 @@ Computes how many time we observed the event `click_ad` in a row. The column is 
 
 The Logistic Regression is implemented using Tensorflow to be able to visualize easily the training process using Tensorboard, to save and use the model quickly and to be able to complexify it without changing too much the code.
 
-```
+```bash
 make train
 ```
 
 or
 
-```
+```bash
 python -m fake_user_detection train-model \
     --output-root data/processed/ \
     --models-root models \
@@ -97,13 +97,14 @@ python -m fake_user_detection train-model \
 ### Make predictions
 
 Save the prediction and print the performance if the `Fake` columns exists and the parameter `evaluate` is True (for debugging only).
-```
+
+```bash
 make predictions
 ```
 
 or
 
-```
+```bash
 python -m fake_user_detection make-predictions \
     --testset-path data/processed/test_data.csv \
     --models-root models \
@@ -115,13 +116,13 @@ python -m fake_user_detection make-predictions \
 
 ### Make tests
 
-```
+```bash
 make tests
 ```
 
 or
 
-```
+```bash
 pytest tests
 ```
 
