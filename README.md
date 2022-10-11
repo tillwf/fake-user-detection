@@ -1,5 +1,7 @@
 # Fake User Detection
 
+This program aims at detecting fake users based on their activity.
+
 ## Installation
 
 Python version: `3.10.7`
@@ -17,7 +19,7 @@ pip install -e .
 python -m fake_user_detection
 ```
 
-Will display all possible command with their description. You can display each command documentation with:
+Will display all possible commands with their description. You can display each command documentation with:
 
 ```
 python -m fake_user_detection <command> --help
@@ -43,8 +45,8 @@ python -m fake_user_detection make-dataset \
 
 ### Features Construction
 
-This command will compute all the features define in the global variable `FEATURE_DICT`.
-We will always compute all the features and select them during the training step.
+This command will compute all the features defined by the global variable `FEATURE_DICT`.
+We will always compute all the features and select them, afterwards, during the training step.
 
 ```
 make features
@@ -58,8 +60,23 @@ python -m fake_user_detection build-features \
     --output-root data/processed/
 ```
 
+You can add features by implementing a class which inherit from `Feature` and implement the method `extract_feature`. Then update the `FEATURE_DICT` global variable to add your class as a new feature constructor.
+
+#### Category Interaction
+
+Computes the number of category each user interacted with and its proportion for each user. Returns two columns called `n_unique_category` and `n_unique_category_proportion`.
+
+#### Event Distribution
+
+Computes the percentage of interaction of each category for each user: this will give as many columns as categories.
+
+#### Event Frequency
+
+Computes how many time we observed the event `click_ad` in a row. The column is called `n_consecutive_click_ad`.
+
 ### Train the model
 
+The Logistic Regression is implemented using Tensorflow to be able to visualize easily the training process using Tensorboard, to save and use the model quickly and to be able to complexify it without changing too much the code.
 
 ```
 make train
@@ -79,6 +96,7 @@ python -m fake_user_detection train-model \
 
 ### Make predictions
 
+Save the prediction and print the performance if the `Fake` columns exists and the parameter `evaluate` is True (for debugging only).
 ```
 make predictions
 ```
@@ -109,5 +127,8 @@ pytest tests
 
 ## Future Work
 
- - Docker
- - Expand tests
+ - Dockerfile
+ - Complete tests
+ - More docstring
+ - Implement a `Trainer` class to be able to change easily the library which makes the training and the prediction
+ - remove duplicate code for feature generation

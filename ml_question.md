@@ -4,9 +4,11 @@
 
 Let's define a trending query as a query with a significant increase in searches for a significant amount of time, but also with a sufficiant amount of searches: going from 1 query per day to 4 is a huge increase in percentage but does not make this query a trend.
 
-We could use the ongoing top N queries, but some query might be always on top and thus not really reflect a trend.
+We could use the ongoing top N queries, but some queries might be always on top and thus not really reflect a trend.
 
-## Global trending searches
+## Implementation
+
+### Global trending searches
 
 Let's assume that we want to construct the same trend for every user of Leboncoin.
 
@@ -28,8 +30,12 @@ To detect a spike we could also try to predict the evolution of the time series 
 
 We do not want to remove the seasonnality as it is part of what we want to capture. During Halloween, the trending queries could be around costumes.
 
-## Split per category / User's recommendation
+### Split per category / User's recommendation
 
 This approach can be apply for each category and a first personnalized trend could be a sampling of each category trend according to user's search distribution in these category.
+
+## A/B Testing
+
+The A/B Test construction depends on wether or not we already have a "trends" algorithm. The metrics could be related to the usage of the feature and the position of the clicked trend, but also general KPI on session duration, conversion etc. Trends could be just seen and give ideas. 
 
 
