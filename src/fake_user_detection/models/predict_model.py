@@ -89,14 +89,17 @@ def make_predictions(testset_path, models_root, output_root, features, evaluate=
     model = load_model(os.path.join(models_root, "final_model.h5"))
 
     logging.info("Making predictions")
-    predictions = pd.DataFrame(
+    raw_predictions = pd.DataFrame(
         model.predict(users_features),
         index=users_features.index,
         columns=["predictions"]
     )
 
     logging.info("Saving predictions")
+    raw_predictions.to_csv(os.path.join(OUTPUT_ROOT, "raw_predictions.csv"))
+    predictions = (raw_predictions >= 0.5).astype(int)
     predictions.to_csv(os.path.join(OUTPUT_ROOT, "predictions.csv"))
+    
     if evaluate:
         logging.info("Evaluating predictions")
         logging.info(model.evaluate(users_features, y_test))

@@ -106,3 +106,8 @@ or
 ```
 pytest tests
 ```
+
+## Future Work
+
+ - Docker
+ - Expand tests
