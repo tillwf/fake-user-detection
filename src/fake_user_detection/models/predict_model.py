@@ -1,4 +1,5 @@
 import click
+import functools as ft
 import json
 import logging
 import os
@@ -12,9 +13,9 @@ from fake_user_detection.features.event_distribution import EventDistribution
 from fake_user_detection.features.event_frequency import EventFrequency
 
 CONF = load_config()
-DATA_PATH = CONF["path"]["input_data_path"]
 OUTPUT_ROOT = CONF["path"]["output_data_root"]
 MODELS_ROOT = CONF["path"]["models_root"]
+TESTSET_PATH = CONF["path"]["testset_path"]
 
 FEATURE_DICT = {
     "category_interaction": CategoryInteraction,
@@ -30,11 +31,19 @@ def predict():
 
 @predict.command()
 @click.option(
-    '--data-path',
+    '--testset-path',
     type=str,
-    default=DATA_PATH,
-    help='Path of train dataset, default is {}'.format(
-        DATA_PATH
+    default=TESTSET_PATH,
+    help='Path of test dataset, default is {}'.format(
+        TESTSET_PATH
+    )
+)
+@click.option(
+    '--models-root',
+    type=str,
+    default=MODELS_ROOT,
+    help='Path of models folder, default is {}'.format(
+        MODELS_ROOT
     )
 )
 @click.option(
@@ -46,30 +55,47 @@ def predict():
     )
 )
 @click.option(
-    '--models-root',
-    type=str,
-    default=MODELS_ROOT,
-    help='Path of models folder, default is {}'.format(
-        MODELS_ROOT
+    '--features',
+    type=list,
+    default=FEATURE_DICT.keys,
+    help='Features used for the training, default is {}'.format(
+        FEATURE_DICT.keys
     )
 )
-def make_predictions(data_path, output_root, models_root, features):
+def make_predictions(testset_path, models_root, output_root, features, evaluate=True):
     logging.info("Make Prediction")
 
     logging.info("Reading test data")
-    test_users = pd.read_csv(os.path.join(OUTPUT_ROOT, "test_users.csv"))
+    test_data = pd.read_csv(testset_path)
+
+    if "Fake" in test_data:
+        y_test = test_data[["UserId", "Fake"]].drop_duplicates().set_index("UserId")
+        test_data.pop("Fake")
 
     logging.info("Create features")
     features_class = [FEATURE_DICT[f] for f in features if FEATURE_DICT.get(f)]
+    users_features = []
     for feature in features_class:
-        f = feature.extract_feature(df)
+        f = feature.extract_feature(test_data)
         users_features.append(f)
-    X_test = users_features.merge(test_users, on="UserId", how="right")
+
+    users_features = ft.reduce(
+        lambda left, right: pd.merge(left, right, on='UserId', how="outer").fillna(0),
+        users_features
+    )
 
     logging.info("Loading model")
-    model = load_model(os.path.join(MODEL_PATH, "final_model.h5"))
+    model = load_model(os.path.join(models_root, "final_model.h5"))
 
     logging.info("Making predictions")
-    predictions = model.predict(dataset_test)
+    predictions = pd.DataFrame(
+        model.predict(users_features),
+        index=users_features.index,
+        columns=["predictions"]
+    )
 
     logging.info("Saving predictions")
+    predictions.to_csv(os.path.join(OUTPUT_ROOT, "predictions.csv"))
+    if evaluate:
+        logging.info("Evaluating predictions")
+        logging.info(model.evaluate(users_features, y_test))

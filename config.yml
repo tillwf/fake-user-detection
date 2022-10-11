@@ -1,6 +1,7 @@
 path:
   input_data_path: "data/raw/fake_users.csv"
   output_data_root: "data/processed/"
+  testset_path: "data/processed/test_data.csv"
   models_root: "models"
   logs_root: "logs"
 

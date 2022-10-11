@@ -67,4 +67,4 @@ def build_features(data_path, output_root):
     
     logging.info("Saving the features")
     X_train.to_csv(os.path.join(OUTPUT_ROOT, "train_features.csv"))
-    X_validation.to_csv(os.path.join(OUTPUT_ROOT, "validation_features.csv"), index=False)
+    X_validation.to_csv(os.path.join(OUTPUT_ROOT, "validation_features.csv"))

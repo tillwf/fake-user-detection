@@ -60,7 +60,10 @@ def make_dataset(data_path, output_root):
     train_users.to_csv(os.path.join(output_root, "train_users.csv"), index=False)
     validation_users.to_csv(os.path.join(output_root, "validation_users.csv"), index=False)
     test_users.to_csv(os.path.join(output_root, "test_users.csv"), index=False)
-    
+    # Saving test data for the predict step
+    test_data = df[df.UserId.isin(test_users.UserId)]
+    test_data.to_csv(os.path.join(output_root, "test_data.csv"), index=False)
+
     logging.info("Train Size: {} ({:.2%} fake users)".format(
         len(train_users),
         sum(train_users["Fake"])/len(train_users)
