@@ -65,7 +65,7 @@ def train():
 )
 def train_model(models_root, output_root, logs_root, features):
     logging.info("Training Model")
-    import ipdb; ipdb.set_trace()
+
     X_train = pd.read_csv(os.path.join(OUTPUT_ROOT, "train_features.csv"),index_col=0, header=[0, 1])
     y_train = pd.read_csv(os.path.join(OUTPUT_ROOT, "train_users.csv")).set_index("UserId")
     X_validation = pd.read_csv(os.path.join(OUTPUT_ROOT, "validation_features.csv"),index_col=0, header=[0, 1])
@@ -79,11 +79,15 @@ def train_model(models_root, output_root, logs_root, features):
 
     linear_model = tf.keras.Sequential([
         normalizer,
-        layers.Dense(units=1)
+        layers.Dense(
+            units=1,
+            activation='sigmoid',
+            input_dim=X_train.shape[1]
+        )
     ])
     linear_model.compile(
         optimizer=tf.keras.optimizers.Adam(learning_rate=0.01),
-        loss='mean_absolute_error',
+        loss="binary_crossentropy",
     )
 
     callbacks = []
